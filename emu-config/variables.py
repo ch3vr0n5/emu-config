@@ -67,8 +67,11 @@ program = fn.load_xml_dictionary(path_config_xml,'programs',2)
 for program_name in program.keys():
     for property in program[program_name].keys():
         if property == 'currentversion':
-            program[program_name][property] = fn.get_program_version(program[program_name]['versionurl'],program[program_name]['versionurltype'],path_base['temp'],github_token)
-
+            current_version = fn.get_program_version(program[program_name]['versionurl'],program[program_name]['versionurltype'],path_base['temp'],github_token)
+            program[program_name][property] = current_version
+            if "program['"+program_name+"']['currentversion']" in program[program_name]['downloadurl']:
+                program[program_name]['downloadurl'] = program[program_name]['downloadurl'].replace("program['"+program_name+"']['currentversion']",current_version)
+                
 # replace program dictionary value text with their evaluated form
 for path_key in path_base.keys():
     for program_name in program.keys():
