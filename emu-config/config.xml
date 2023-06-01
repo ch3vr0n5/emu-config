@@ -60,7 +60,7 @@
     </retroarch>
     <retroarchcores>
       <apptype>extras</apptype>
-      <downloadurl>https://buildbot.libretro.com/stable/program['retroarch']['currentversion']/path_base['os_name_full']/x86_path_base['os_bitness_num']/RetroArch_cores.7z</downloadurl>
+      <downloadurl>https://buildbot.libretro.com/stable/program['retroarchcores']['currentversion']/path_base['os_name_full']/x86_path_base['os_bitness_num']/RetroArch_cores.7z</downloadurl>
       <downloadurltype>direct</downloadurltype>
       <downloadfiletype>7z</downloadfiletype>
       <zipfolder />
