@@ -1,56 +1,88 @@
 import os
-import xml.etree.ElementTree as ET
-import functions
+import tempfile
+import platform
+import functions as fn
 
-# load os specific paths from xml to dictionary and 
-def load_xml_dictionary(file_path,xml_path,depth):
-    # Parse XML file
-    tree = ET.parse(file_path)
-
-    # Get the root element
-    root = tree.getroot()
-
-    # Create a dictionary to hold the key values
-    output = {}
-    
-    # Find the designated element
-    root_node = root.find(xml_path)
-
-    # Iterate over each child element
-    if depth == 2:
-        for child in root_node:
-            node = child.tag
-            output[node] = {}
-            for subchild in child:
-                # Use the tag as the key and the text as the value
-                output[node][subchild.tag] = subchild.text
-    elif depth == 1:
-        for child in root_node:
-            output[child.tag] = child.text
-
-    return output
+# github token
+github_token = os.environ['GITHUB_TOKEN']
 
 # get os and current working dir
-os_name = functions.get_os()
+os_name = fn.get_os()
+os_name_full = fn.get_os('full')
+os_bitness = platform.architecture()[0]  # gets either '32bit' or '64bit'
+os_bitness_num = os_bitness.replace("bit","")  # gets either '32' or '64'
 path_working = os.getcwd()
 path_config_xml = os.path.join(path_working,'emu-config','config.xml')
 
 # get os paths dictionary
-paths_os = load_xml_dictionary(path_config_xml,'variables/ospath',2)
+paths_os = fn.load_xml_dictionary(path_config_xml,'variables/ospath',2)
 
 # base os dirs
 path_user = os.path.expandvars(paths_os[os_name]['user'])
+path_app = os.path.expandvars(paths_os[os_name]['app'])
 path_config = os.path.expandvars(paths_os[os_name]['config'])
-path_bin = os.path.expandvars(paths_os[os_name]['bin'])
+path_desktop = os.path.join(path_user, 'Desktop')
+
+# base dirs
+path_app_data = os.path.join(path_app, 'EmuSuite')
+path_app_config = os.path.join(path_config, 'EmuSuite')
+path_temp = tempfile.gettempdir()
+
+path_base = { 
+    'user':path_user,
+    'app':path_app,
+    'config':path_config,
+    'desktop':path_desktop,
+    'app_data':path_app_data,
+    'app_config':path_app_config,
+    'temp':path_temp,
+    'os_name':os_name,
+    'os_name_full':os_name_full,
+    'os_bitness':os_bitness,
+    'os_bitness_num':os_bitness_num
+}
 
 # Load the path dictionaries
-paths = load_xml_dictionary(path_config_xml,'variables/paths',1)
-paths = {k: v.replace('path_user', path_user) for k, v in paths.items()}
-paths = {k: v.replace('path_emulation', paths['emulation']) for k, v in paths.items()}
-paths = {k: v.replace('${sep}', os.sep) for k, v in paths.items()}
+path = fn.load_xml_dictionary(path_config_xml,'variables/paths',1)
+
+# replace ${sep} text in path dictionary values with the proper os.sep
+path = {k: v.replace('${sep}', os.sep) for k, v in path.items()}
+
+# replace path dictionary value path_base variables with their evaluated form
+for path_key in path_base.keys():
+    for replace_key, replace_value in path.items():
+        if "path_base['"+path_key+"']" in replace_value:
+            path[replace_key] = replace_value.replace("path_base['"+path_key+"']",path_base[path_key])
+
+# replace path dictionary value path variables with their evaluated form
+for path_key in path.keys():
+    for replace_key, replace_value in path.items():
+        if "path['"+path_key+"']" in replace_value:
+            path[replace_key] = replace_value.replace("path['"+path_key+"']",path[path_key])
 
 # create dictionaries for each program with paths evaluated
+program = fn.load_xml_dictionary(path_config_xml,'programs',2)
+
+# update current version for each program
+for program_name in program.keys():
+    for property in program[program_name].keys():
+        if property == 'currentversion':
+            program[program_name][property] = fn.get_program_version(program[program_name]['versionurl'],program[program_name]['versionurltype'],path_base['temp'],github_token)
+
+# replace program dictionary value text with their evaluated form
+for path_key in path_base.keys():
+    for program_name in program.keys():
+        for replace_key, replace_value in program[program_name].items():
+            if "path_base['"+path_key+"']" in replace_value and "url" in replace_key:
+                program[program_name][replace_key] = replace_value.replace("path_base['"+path_key+"']",path_base[path_key])
 
 #then load custom variables from settings if available
 
-print(paths)
+#print(get_download_url())
+# for path_value in path_base.values():
+#     print(path_value)
+# for path_value in path.values():
+#     print(path_value)
+for key in program.keys():
+    for key2, value in program[key].items():
+        print(key+":"+key2+":"+value)
