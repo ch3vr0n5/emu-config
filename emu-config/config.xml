@@ -1,22 +1,74 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<settings>
+<configuration>
   <variables>
     <ospath>
       <win>
         <user>${HOMEDRIVE}${HOMEPATH}</user>
+        <app>${LOCALAPPDATA}\Programs</app>
         <config>${APPDATA}</config>
-        <bin>${LOCALAPPDATA}\Programs</bin>
       </win>
       <linux>
         <user>${HOME}</user>
+        <app>${HOME}/.local/share</app>
         <config>${HOME}/.config</config>
-        <bin>${HOME}/.local/share</bin>
       </linux>
     </ospath>
     <paths>
-      <emulation>path_user${sep}Emulation</emulation>
-      <apps>path_emulation${sep}apps</apps>
-      <emulators>path_emulation${sep}emulators</emulators>
+      <logs>path_base['app_data']${sep}logs</logs>
+      <downloads>path_base['app_data']${sep}downloads</downloads>
+      <shortcuts>path_base['app_data']${sep}shortcuts</shortcuts>
+      <configs>path_base['app_data']${sep}configs</configs>
+      <temp>path_base['app_data']${sep}temp</temp>
+      <apps>path_base['app_data']${sep}apps</apps>
+      <emulators>path_base['app_data']${sep}emulators</emulators>
+      <srm>path['apps']${sep}SteamRomManager</srm>
+      <srmdata>path['srm']${sep}userData</srmdata>
+      <es>path['apps']${sep}EmulationStation</es>
+      <esdata>path['apps']${sep}resources${sep}systems${sep}path_base['os_name_full']</esdata>
+      <emulation>path_base['user']${sep}Emulation</emulation>
+      <roms>path['emulation']${sep}roms</roms>
+      <bios>path['emulation']${sep}bios</bios>
+      <saves>path['emulation']${sep}saves</saves>
+      <states>path['emulation']${sep}states</states>
+      <storage>path['emulation']${sep}storage</storage>
+      <emuconfigs>path['emulation']${sep}config</emuconfigs>
     </paths>
   </variables>
-</settings>
+  <programs>
+    <steamrommanager>
+      <apptype>app</apptype>
+      <downloadurl>https://api.github.com/repos/SteamGridDB/steam-rom-manager/releases/latest</downloadurl>
+      <downloadurltype>git-api</downloadurltype>
+      <downloadfiletype>bin</downloadfiletype>
+      <versionurl>https://api.github.com/repos/SteamGridDB/steam-rom-manager/releases/latest</versionurl>
+      <versionurltype>git-api</versionurltype>
+      <currentversion></currentversion>
+      <desktopshortcut />
+      <updateconfig />
+    </steamrommanager>
+    <retroarch>
+      <apptype>app</apptype>
+      <downloadurl>https://buildbot.libretro.com/stable/program['retroarch']['currentversion']/path_base['os_name_full']/x86_path_base['os_bitness_num']/RetroArch.7z</downloadurl>
+      <downloadurltype>direct</downloadurltype>
+      <downloadfiletype>7z</downloadfiletype>
+      <folderinzip />
+      <versionurl>https://api.github.com/repos/libretro/RetroArch/releases/latest</versionurl>
+      <versionurltype>git-api</versionurltype>
+      <currentversion></currentversion>
+      <desktopshortcut />
+      <updateconfig />
+    </retroarch>
+    <retroarchcores>
+      <apptype>extras</apptype>
+      <downloadurl>https://buildbot.libretro.com/stable/program['retroarch']['currentversion']/path_base['os_name_full']/x86_path_base['os_bitness_num']/RetroArch_cores.7z</downloadurl>
+      <downloadurltype>direct</downloadurltype>
+      <downloadfiletype>7z</downloadfiletype>
+      <zipfolder />
+      <versionurl>https://api.github.com/repos/libretro/RetroArch/releases/latest</versionurl>
+      <versionurltype>git-api</versionurltype>
+      <currentversion></currentversion>
+      <desktopshortcut />
+      <updateconfig />
+    </retroarchcores>
+  </programs>
+</configuration>
