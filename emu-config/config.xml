@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<settings>
+  <variables>
+    <ospath>
+      <win>
+        <user>${HOMEDRIVE}${HOMEPATH}</user>
+        <config>${APPDATA}</config>
+        <bin>${LOCALAPPDATA}\Programs</bin>
+      </win>
+      <linux>
+        <user>${HOME}</user>
+        <config>${HOME}/.config</config>
+        <bin>${HOME}/.local/share</bin>
+      </linux>
+    </ospath>
+    <paths>
+      <emulation>path_user${sep}Emulation</emulation>
+      <apps>path_emulation${sep}apps</apps>
+      <emulators>path_emulation${sep}emulators</emulators>
+    </paths>
+  </variables>
+</settings>

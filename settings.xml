@@ -1,0 +1,8 @@
+<settings>
+ <apps>
+  <srm install="true"/>
+ </apps>
+ <emulators>
+  <retroarch install="true"/>
+ </emulators>
+</settings>
