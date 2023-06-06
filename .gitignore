@@ -233,4 +233,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Test stuff
+emu-config/test.py
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,visualstudiocode,python

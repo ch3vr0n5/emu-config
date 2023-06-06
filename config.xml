@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <default_settings>
+    <log_level>DEBUG</log_level>
+  </default_settings>
+  <paths>
+      <roms>base['emulation']${sep}roms</roms>
+      <bios>base['emulation']${sep}bios</bios>
+      <saves>base['emulation']${sep}saves</saves>
+      <states>base['emulation']${sep}states</states>
+      <storage>base['emulation']${sep}storage</storage>
+      <emuconfigs>base['emulation']${sep}config</emuconfigs>
+      <emulation>base['home']${sep}Emulation</emulation>
+      <srmdata>path['srm']${sep}userData</srmdata>
+      <esdata>path['es']${sep}resources${sep}systems${sep}base['os_name_full']</esdata>
+      <srm>path['apps']${sep}SteamRomManager</srm>
+      <es>path['apps']${sep}EmulationStation</es>
+      <downloads>base['app_data']${sep}downloads</downloads>
+      <shortcuts>base['app_data']${sep}shortcuts</shortcuts>
+      <configs>base['app_data']${sep}configs</configs>
+      <temp>base['app_data']${sep}temp</temp>
+      <apps>base['app_data']${sep}apps</apps>
+      <emulators>base['app_data']${sep}emulators</emulators>
+  </paths>
+  <programs>
+    <steamrommanager>
+      <apptype>app</apptype>
+        <download>
+          <url>https://api.github.com/repos/SteamGridDB/steam-rom-manager/releases/latest</url>
+          <type>git-hub</type>
+          <filetype />
+        </download>
+        <version>
+          <url>https://api.github.com/repos/SteamGridDB/steam-rom-manager/releases/latest</url>
+          <type>git-hub</type>
+        </version>
+      <currentversion />
+      <desktopshortcut />
+      <updateconfig />
+    </steamrommanager>
+    <emulationstationde>
+      <apptype>app</apptype>
+        <download>
+          <url>https://gitlab.com/api/v4/projects/es-de%2Femulationstation-de/releases</url>
+          <type>git-lab</type>
+          <filetype />
+        </download>
+        <version>
+          <url>https://gitlab.com/api/v4/projects/es-de%2Femulationstation-de/releases</url>
+          <type>git-lab</type>
+        </version>
+      <currentversion />
+      <desktopshortcut />
+      <updateconfig />
+    </emulationstationde>
+    <retroarch>
+      <apptype>app</apptype>
+        <download>
+          <url>https://buildbot.libretro.com/stable/program['retroarch']['currentversion']/base['os_name_full']/x86_base['os_bitness_num']/RetroArch.7z</url>
+          <type>direct</type>
+          <filetype />
+        </download>
+        <version>
+          <url>https://api.github.com/repos/libretro/RetroArch/releases/latest</url>
+          <type>git-hub</type>
+        </version>
+      <currentversion />
+      <desktopshortcut />
+      <updateconfig />
+    </retroarch>
+    <retroarchcores>
+      <apptype>extras</apptype>
+        <download>
+          <url>https://buildbot.libretro.com/stable/program['retroarchcores']['currentversion']/base['os_name_full']/x86_base['os_bitness_num']/RetroArch_cores.7z</url>
+          <type>direct</type>
+          <filetype />
+        </download>
+        <version>
+          <url>https://api.github.com/repos/libretro/RetroArch/releases/latest</url>
+          <type>git-hub</type>
+        </version>
+      <currentversion />
+      <desktopshortcut />
+      <updateconfig />
+    </retroarchcores>
+    <cemu>
+      <apptype>emulator</apptype>
+        <download>
+          <url>https://api.github.com/repos/cemu-project/Cemu/releases</url>
+          <type>git-hub</type>
+          <filetype />
+          <include />
+          <exclude />
+        </download>
+        <version>
+          <url>https://api.github.com/repos/cemu-project/Cemu/releases</url>
+          <type>git-hub</type>
+        </version>
+      <currentversion />
+      <desktopshortcut />
+      <updateconfig />
+    </cemu>
+  </programs>
+</configuration>

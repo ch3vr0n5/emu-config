@@ -1,8 +1,14 @@
 <settings>
- <apps>
-  <srm install="true"/>
- </apps>
+ <programs>
+  <steamrommanager>
+    <installed>true</installed>
+    <version></version>
+  </steamrommanger>
+ </programs>
  <emulators>
-  <retroarch install="true"/>
+  <retroarch>
+    <installed>true</installed>
+    <version></version> 
+  </retroarch>
  </emulators>
 </settings>
