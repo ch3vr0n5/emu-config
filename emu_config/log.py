@@ -1,20 +1,21 @@
 import os
 import logging
-from .variablesBase import base, default
+from .core import core, default
 
 # Create the log directory if it doesn't exist
-log_dir = base['app_log']
+log_dir = core['core']['log']
 log_file = os.path.join(log_dir,'emu-config-debug.log')
+default_log_level = default['log_level']
 print(log_file)
 os.makedirs(log_dir, exist_ok=True)
 
-if default['log_level'] == 'DEBUG':
+if default_log_level == 'DEBUG':
     log_level = logging.DEBUG
-elif default['log_level'] == 'WARNING':
+elif default_log_level == 'WARNING':
     log_level = logging.WARNING
-elif default['log_level'] == 'ERROR':
+elif default_log_level == 'ERROR':
     log_level = logging.ERROR
-elif default['log_level'] == 'CRITICAL':
+elif default_log_level == 'CRITICAL':
     log_level = logging.CRITICAL
 else:
     log_level = logging.INFO
@@ -46,3 +47,5 @@ log.addHandler(file_handler)
 # log.warning('This is a warning message')
 # log.error('This is an error message')
 # log.critical('This is a critical message')
+
+log.info(f"LOG - Log file: {log_file} Debug level: {default_log_level}")

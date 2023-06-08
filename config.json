@@ -1,0 +1,173 @@
+{
+	"configuration": {
+		"default_settings": {
+            "appname": "emu-config",
+			"log_level": "DEBUG"
+		},
+		"os": {
+			"win": {
+				"home": ["${HOMEDRIVE}", "${HOMEPATH}"],
+				"data": ["${LOCALAPPDATA}", "Programs", "${app_name}"],
+				"config": ["${LOCALAPPDATA}", "${app_name}"],
+				"cache": ["${LOCALAPPDATA}", "${app_name}", "cache"],
+				"log": ["${LOCALAPPDATA}", "${app_name}", "log"],
+				"emulation": ["${HOMEDRIVE}", "${HOMEPATH}", "Emulation"],
+                "desktop": ["${HOMEDRIVE}", "${HOMEPATH}","Desktop"]
+			},
+			"linux": {
+				"home": ["${HOME"],
+				"data": ["${HOME}", ".local", "share", "${app_name}"],
+				"config": ["${HOME}", ".config", "${app_name}"],
+				"cache": ["${HOME}", ".local", "state", "${app_name}", "cache"],
+				"log": ["${HOME}", ".local", "state", "${app_name}", "log"],
+				"emulation": ["${HOME}", "Emulation"],
+                "desktop": ["${HOME}", "Desktop"]
+			}
+		},
+		"paths": {
+			"emulation": {
+				"base": ["$[core^home]","Emulation"],
+				"roms": ["$[core^emulation]","roms"],
+				"bios": ["$[core^emulation]","bios"],
+				"saves": ["$[core^emulation]","saves"],
+				"states": ["$[core^emulation]","states"],
+				"storage": ["$[core^emulation]","storage"],
+				"emuconfigs": ["$[core^emulation]","config"]
+			},
+			"emuconfig": {
+				"base": ["$[core^data]"],
+				"downloads": ["$[core^data]", "downloads"],
+				"shortcuts": ["$[core^data]", "shortcuts"],
+				"configs": ["$[core^data]", "configs"],
+				"temp": ["$[core^data]", "temp"],
+				"apps": ["$[core^data]", "apps"],
+				"emulators": ["$[core^data]", "emulators"]
+			}
+		},
+		"emuconfig": {
+			"name": "emu-config",
+			"type": "main",
+			"download": {
+				"url": "https://api.github.com/repos/ch3vr0n5/emu-config/releases/latest",
+				"type": "git-hub",
+				"filetype": "",
+				"include": "",
+				"exclude": ""
+			},
+			"version": {
+				"url": "https://api.github.com/repos/ch3vr0n5/emu-config/releases/latest",
+				"type": "git-hub",
+				"current": "0"
+			}
+		},
+		"programs": {
+			"steamrommanager": {
+				"name": "Steam Rom Manager",
+				"type": "app",
+				"download": {
+					"url": "https://api.github.com/repos/SteamGridDB/steam-rom-manager/releases/latest",
+					"type": "git-hub",
+					"filetype": "",
+					"include": "",
+					"exclude": ""
+				},
+				"version": {
+					"url": "https://api.github.com/repos/SteamGridDB/steam-rom-manager/releases/latest",
+					"type": "git-hub",
+					"current": "0"
+				},
+				"paths": {
+					"base": ["$[paths^emuconfig^apps]", "SteamRomManager"],
+					"data": ["$[programs^steamrommanager^paths^base]", "userData"]
+				},
+				"desktopshortcut": false,
+				"updateconfig": true
+			},
+			"emulationstationde": {
+				"name": "EmulationStation-DE",
+				"apptype": "app",
+				"download": {
+					"url": "https://gitlab.com/api/v4/projects/es-de%2Femulationstation-de/releases",
+					"type": "git-lab",
+					"filetype": "",
+					"include": "",
+					"exclude": ""
+				},
+				"version": {
+					"url": "https://gitlab.com/api/v4/projects/es-de%2Femulationstation-de/releases",
+					"type": "git-lab",
+					"current": "0"
+				},
+				"paths": {
+					"base": ["$[paths^emuconfig^apps]", "EmulationStationDE"],
+					"data": ["$[programs^emulationstationde^paths^base]", "resources", "systems", "$[osvar^os_name_full]"]
+				},
+				"desktopshortcut": "",
+				"updateconfig": ""
+			},
+			"retroarch": {
+				"apptype": "app",
+				"download": {
+					"url": "https://buildbot.libretro.com/stable/$[programs^retroarch^version^current]/$[osvar^os_name_full]/x86_$[osvar^os_bitness_num]/RetroArch.7z",
+					"type": "direct",
+					"filetype": "",
+					"include": "",
+					"exclude": ""
+				},
+				"version": {
+					"url": "https://api.github.com/repos/libretro/RetroArch/releases/latest",
+					"type": "git-hub",
+					"current": "0"
+				},
+				"paths": {
+					"base": ["$[paths^emuconfig^emulators]", "RetroArch"],
+					"data": ""
+				},
+				"desktopshortcut": "",
+				"updateconfig": ""
+			},
+			"retroarchcores": {
+				"apptype": "extras",
+				"download": {
+					"url": "https://buildbot.libretro.com/stable/$[programs^retroarch^version^current]/$[osvar^os_name_full]/x86_$[osvar^os_bitness_num]/RetroArch_cores.7z",
+					"type": "direct",
+					"filetype": "",
+					"include": "",
+					"exclude": ""
+				},
+				"paths": {
+					"base": ["$[paths^emuconfig^emulators]", "RetroArch", "cores"],
+					"data": ""
+				},
+				"version": {
+					"url": "https://api.github.com/repos/libretro/RetroArch/releases/latest",
+					"type": "git-hub",
+					"current": "0"
+				},
+				"desktopshortcut": "",
+				"updateconfig": ""
+			},
+			"cemu": {
+				"apptype": "emulator",
+				"download": {
+					"url": "https://api.github.com/repos/cemu-project/Cemu/releases",
+					"type": "git-hub",
+					"filetype": "",
+					"include": "",
+					"exclude": ""
+				},
+				"paths": {
+					"base": ["$[paths^emuconfig^emulators]", "Cemu"],
+					"data": ""
+				},
+				"version": {
+					"url": "https://api.github.com/repos/cemu-project/Cemu/releases",
+					"type": "git-hub",
+					"current": "0"
+				},
+				"desktopshortcut": "",
+				"updateconfig": ""
+			}
+		}
+	}
+}

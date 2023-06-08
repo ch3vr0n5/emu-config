@@ -4,29 +4,23 @@ import pickle
 import time
 import re
 from .log import log
-from .variablesBase import base
+from .core import *
 
-cache_path = base['app_cache']
-os_name = base['os_name']
-os_bitness_num = base['os_bitness_num']
-github_token = base['github_token']
+cache_path = core['core']['cache']
 device_type = ''
 
-def is_valid_version(version):
-    return bool(re.match("^[0-9.-]*$", version))
+def is_valid_version(input_version):
+    pattern = re.compile(r'^\d+(\.\d+){1,3}(-\d+)?$')
+    return bool(pattern.match(input_version))
+
 
 if github_token == '' or github_token is None:
     github_token_exists = False
-    log.debug('GitHub token not present.') 
 else:
-    log.debug('GitHub token present.')
     github_token_exists = True
 
-if os.path.exists(cache_path):
-    log.debug('Cache path already exists: '+cache_path)
-else:
+if not os.path.exists(cache_path):
     os.makedirs(cache_path, exist_ok=True)
-    log.debug('Cache path created: '+cache_path)
 
 # based on os, lookup url, lookup type (git-hub, or web-scrape), include strings and exclude strings
 # we can construct the download url. This method prefers the bitness of the OS as well as portable releases for windows
@@ -109,7 +103,7 @@ def get_program_url(lookup_url, lookup_method, includes="", excludes=""):
 
 def get_program_version(program_name, lookup_url, lookup_method):
     program_version = None
-    log.debug(str(program_name)+": get_program_version: lookupurl:"+lookup_url+" lookup_method:"+lookup_method)
+    log.debug("get_program_version - "+str(program_name)+" - lookupurl:"+lookup_url+" - lookup_method:"+lookup_method)
 
     cache = {}
     cache_file = os.path.join(cache_path,'emu-config-version-response.cache')
@@ -126,21 +120,21 @@ def get_program_version(program_name, lookup_url, lookup_method):
     cache_url_exists = lookup_url in cache
     if cache_url_exists and cache_version_check:  # 600 seconds = 10 minutes
         if current_time_check:
-            log.debug(str(program_name)+": get_program_version: "+"Using cached data")
-            log.debug(str(program_name)+": get_program_version: Returned "+str(cache_data))
+            log.debug("get_program_version - "+str(program_name)+" - Using cached data")
+            log.debug("get_program_version - "+str(program_name)+" - Returned "+str(cache_data))
             return cache_data
         else: 
-            log.debug(str(program_name)+": get_program_version: CACHE: cache_url_exists: "+str(cache_url_exists))
-            log.debug(str(program_name)+": get_program_version: CACHE: current_time_check: "+str(current_time_check))
-            log.debug(str(program_name)+": get_program_version: CACHE: cache_version_check: "+str(cache_version_check))
-            log.debug(str(program_name)+": get_program_version: CACHE: setting program_version to cache_data as fallback: "+str(cache_data))
+            log.debug("get_program_version - "+str(program_name)+" - CACHE: cache_url_exists: "+str(cache_url_exists))
+            log.debug("get_program_version - "+str(program_name)+" - CACHE: current_time_check: "+str(current_time_check))
+            log.debug("get_program_version - "+str(program_name)+" - CACHE: cache_version_check: "+str(cache_version_check))
+            log.debug("get_program_version - "+str(program_name)+" - CACHE: setting program_version to cache_data as fallback: "+str(cache_data))
             program_version = cache_data
 
     if lookup_method == "git-hub":
         headers = {}
 
         try:   
-            log.debug(str(program_name)+": get_program_version: "+"Fetching new version from internet") 
+            log.debug("get_program_version - "+str(program_name)+" - "+"Fetching new version from internet") 
             if github_token_exists:
                 headers = {
                     'Authorization': f'Bearer {github_token}',
@@ -150,13 +144,13 @@ def get_program_version(program_name, lookup_url, lookup_method):
                 response = requests.get(lookup_url)
             response.raise_for_status()
         except requests.exceptions.HTTPError as errh:
-            log.error(str(program_name)+": get_program_version: "+f"HTTP Error: {errh}")
+            log.error("get_program_version - "+str(program_name)+" - "+f"HTTP Error: {errh}")
         except requests.exceptions.ConnectionError as errc:
-            log.error(str(program_name)+": get_program_version: "+f"Error Connecting: {errc}")
+            log.error("get_program_version - "+str(program_name)+" - "+f"Error Connecting: {errc}")
         except requests.exceptions.Timeout as errt:
-            log.error(str(program_name)+": get_program_version: "+f"Timeout Error: {errt}")
+            log.error("get_program_version - "+str(program_name)+" - "+f"Timeout Error: {errt}")
         except requests.exceptions.RequestException as err:
-            log.error(str(program_name)+": get_program_version: "+f"Something went wrong: {err}")
+            log.error("get_program_version - "+str(program_name)+" - "+f"Something went wrong: {err}")
         else:
             if response.status_code == 200:
                 data = response.json()
@@ -173,37 +167,37 @@ def get_program_version(program_name, lookup_url, lookup_method):
                         with open(cache_file, 'wb') as f:
                             pickle.dump(cache, f)
 
-                        log.debug(str(program_name)+": get_program_version: "+"New version fetched: "+str(program_version)) 
+                        log.debug("get_program_version - "+str(program_name)+" - "+"New version fetched: "+str(program_version)) 
                         return program_version
                     else:
-                        log.error(str(program_name)+": get_program_version: Invalid version: "+str(program_version))
+                        log.error("get_program_version - "+str(program_name)+" - Invalid version: "+str(program_version))
                         return program_version
                 elif "API rate limit exceeded" in data:
-                    log.error(str(program_name)+": get_program_version: "+"API rate limit exceeded.")
+                    log.error("get_program_version - "+str(program_name)+" - "+"API rate limit exceeded.")
                     return program_version
                 else:
-                    log.error(str(program_name)+": get_program_version: "+"'tag_name' not in response. Full response:")
-                    log.error(str(program_name)+": get_program_version: "+str(data))
+                    log.error("get_program_version - "+str(program_name)+" - "+"'tag_name' not in response. Full response:")
+                    log.error("get_program_version - "+str(program_name)+" - "+str(data))
                     return program_version
             else:
-                log.error(str(program_name)+": get_program_version: "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
+                log.error("get_program_version - "+str(program_name)+" - "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
                 return program_version
         finally:
                 return program_version
     if lookup_method == "git-lab":
 
         try:   
-            log.debug(str(program_name)+": get_program_version: "+"Fetching new version from internet") 
+            log.debug("get_program_version - "+str(program_name)+" - "+"Fetching new version from internet") 
             response = requests.get(lookup_url)
             response.raise_for_status()
         except requests.exceptions.HTTPError as errh:
-            log.error(str(program_name)+": get_program_version: "+f"HTTP Error: {errh}")
+            log.error("get_program_version - "+str(program_name)+" - "+f"HTTP Error: {errh}")
         except requests.exceptions.ConnectionError as errc:
-            log.error(str(program_name)+": get_program_version: "+f"Error Connecting: {errc}")
+            log.error("get_program_version - "+str(program_name)+" - "+f"Error Connecting: {errc}")
         except requests.exceptions.Timeout as errt:
-            log.error(str(program_name)+": get_program_version: "+f"Timeout Error: {errt}")
+            log.error("get_program_version - "+str(program_name)+" - "+f"Timeout Error: {errt}")
         except requests.exceptions.RequestException as err:
-            log.error(str(program_name)+": get_program_version: "+f"Something went wrong: {err}")
+            log.error("get_program_version - "+str(program_name)+" - "+f"Something went wrong: {err}")
         else:
             if response.status_code == 200:
                 data = response.json()
@@ -223,14 +217,14 @@ def get_program_version(program_name, lookup_url, lookup_method):
 
                     return program_version
                 elif "API rate limit exceeded" in data:
-                    log.error(str(program_name)+": get_program_version: "+"API rate limit exceeded.")
+                    log.error("get_program_version - "+str(program_name)+" - "+"API rate limit exceeded.")
                     return program_version
                 else:
-                    log.error(str(program_name)+": get_program_version: "+"'tag_name' not in response. Full response:")
-                    log.error(str(program_name)+": get_program_version: "+str(data))
+                    log.error("get_program_version - "+str(program_name)+" - "+"'tag_name' not in response. Full response:")
+                    log.error("get_program_version - "+str(program_name)+" - "+str(data))
                     return program_version
             else:
-                log.error(str(program_name)+": get_program_version: "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
+                log.error("get_program_version - "+str(program_name)+" - "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
                 return program_version
         finally:
                 return program_version

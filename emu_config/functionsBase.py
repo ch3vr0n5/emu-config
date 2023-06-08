@@ -1,5 +1,9 @@
 import xml.etree.ElementTree as ET
+import os
 # functionsBase.py
+
+# return evaluated variables in config.json
+
 
 # Function to load XML into a dictionary
 def load_xml_dictionary(file_path, xml_path):

@@ -1,13 +1,11 @@
 import json
+from emu_config.core import default, core
 from emu_config.log import log
-from emu_config.variablesBase import base, default
+from emu_config.variables import paths, programs
 
-log.debug('base dictionary: '+json.dumps(base, indent=4))
-log.debug('default settings dictionary: '+json.dumps(default, indent=4))
-
-from emu_config.variables import path,program
-
-log.debug('path dictionary: '+json.dumps(path, indent=4))
-log.debug('program dictionary: '+json.dumps(program, indent=4))
-
-
+log.info('core: '+json.dumps(core, indent=4))
+log.info('default settings dictionary: '+json.dumps(default, indent=4))
+log.info('paths dictionary: '+json.dumps(paths, indent=4))
+# log.debug('path_emulation dictionary: '+json.dumps(path_emulation, indent=4))
+# log.debug('path_emuconfig dictionary: '+json.dumps(path_emuconfig, indent=4))
+log.debug('programs dictionary: '+json.dumps(programs, indent=4))
