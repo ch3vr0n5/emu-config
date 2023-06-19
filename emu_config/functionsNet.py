@@ -3,29 +3,19 @@ import requests
 import pickle
 import time
 import re
-from .log import log
-from .core import *
-
-cache_path = core['core']['cache']
-device_type = ''
+from kivy.logger import Logger
 
 def is_valid_version(input_version):
     pattern = re.compile(r'^\d+(\.\d+){1,3}(-\d+)?$')
     return bool(pattern.match(input_version))
 
-
-if github_token == '' or github_token is None:
-    github_token_exists = False
-else:
-    github_token_exists = True
-
-if not os.path.exists(cache_path):
-    os.makedirs(cache_path, exist_ok=True)
-
 # based on os, lookup url, lookup type (git-hub, or web-scrape), include strings and exclude strings
 # we can construct the download url. This method prefers the bitness of the OS as well as portable releases for windows
-def get_program_url(lookup_url, lookup_method, includes="", excludes=""):
-    log.debug("get_program_url: lookupurl:"+lookup_url+" lookup_method:"+lookup_method+" includes:"+includes+" excludes:"+excludes)
+def get_program_url(lookup_url, lookup_method, cache_path, github_token, os_name, os_bitness_num, device_type, includes="", excludes=""):
+    Logger.debug("Net Functions: lookupurl:"+lookup_url+" lookup_method:"+lookup_method+" includes:"+includes+" excludes:"+excludes)
+
+    if github_token is None or github_token == '': github_token_exists = False 
+    else: github_token_exists = True
     
     cache = {}
     cache_file = os.path.join(cache_path,'emu-config-download-response.cache')
@@ -38,8 +28,8 @@ def get_program_url(lookup_url, lookup_method, includes="", excludes=""):
 
         current_time = time.time()
         if lookup_url in cache and current_time - cache[lookup_url]['time'] < 600:  # 600 seconds = 10 minutes
-            log.debug("get_program_url: Using cached data")
-            log.debug("get_program_url: Returned "+cache[lookup_url]['data'])
+            Logger.debug("Net Functions: Using cached data")
+            Logger.debug("Net Functions: Returned "+cache[lookup_url]['data'])
             return cache[lookup_url]['data']
 
         if github_token_exists:
@@ -47,17 +37,17 @@ def get_program_url(lookup_url, lookup_method, includes="", excludes=""):
                 'Authorization': f'Bearer {github_token}',
             }
         try:   
-            log.debug("get_program_url: Fetching new version from internet") 
+            Logger.debug("Net Functions: Fetching new version from internet") 
             response = requests.get(lookup_url, headers=headers)
             response.raise_for_status()
         except requests.exceptions.HTTPError as errh:
-            log.error("get_program_url: "+f"HTTP Error: {errh}")
+            Logger.error("Net Functions: "+f"HTTP Error: {errh}")
         except requests.exceptions.ConnectionError as errc:
-            log.error("get_program_url: "+f"Error Connecting: {errc}")
+            Logger.error("Net Functions: "+f"Error Connecting: {errc}")
         except requests.exceptions.Timeout as errt:
-            log.error("get_program_url: "+f"Timeout Error: {errt}")
+            Logger.error("Net Functions: "+f"Timeout Error: {errt}")
         except requests.exceptions.RequestException as err:
-            log.error("get_program_url: "+f"Something went wrong: {err}")
+            Logger.error("Net Functions: "+f"Something went wrong: {err}")
         else:
             if response.status_code == 200:
                 release_info = response.json()
@@ -97,13 +87,16 @@ def get_program_url(lookup_url, lookup_method, includes="", excludes=""):
                     # return the download url of the most preferred asset
                     return download_url
             else:
-                log.error("get_program_url: "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
+                Logger.error("Net Functions: "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
     return None
 
 
-def get_program_version(program_name, lookup_url, lookup_method):
+def get_program_version(program_name, lookup_url, lookup_method, cache_path, github_token):
     program_version = None
-    log.debug("get_program_version - "+str(program_name)+" - lookupurl:"+lookup_url+" - lookup_method:"+lookup_method)
+    Logger.debug("Net Functions:  "+str(program_name)+" - lookupurl:"+lookup_url+" - lookup_method:"+lookup_method)
+
+    if github_token is None or github_token == '': github_token_exists = False 
+    else: github_token_exists = True
 
     cache = {}
     cache_file = os.path.join(cache_path,'emu-config-version-response.cache')
@@ -120,21 +113,21 @@ def get_program_version(program_name, lookup_url, lookup_method):
     cache_url_exists = lookup_url in cache
     if cache_url_exists and cache_version_check:  # 600 seconds = 10 minutes
         if current_time_check:
-            log.debug("get_program_version - "+str(program_name)+" - Using cached data")
-            log.debug("get_program_version - "+str(program_name)+" - Returned "+str(cache_data))
+            Logger.debug("Net Functions:  "+str(program_name)+" - Using cached data")
+            Logger.debug("Net Functions:  "+str(program_name)+" - Returned "+str(cache_data))
             return cache_data
         else: 
-            log.debug("get_program_version - "+str(program_name)+" - CACHE: cache_url_exists: "+str(cache_url_exists))
-            log.debug("get_program_version - "+str(program_name)+" - CACHE: current_time_check: "+str(current_time_check))
-            log.debug("get_program_version - "+str(program_name)+" - CACHE: cache_version_check: "+str(cache_version_check))
-            log.debug("get_program_version - "+str(program_name)+" - CACHE: setting program_version to cache_data as fallback: "+str(cache_data))
+            Logger.debug("Net Functions:  "+str(program_name)+" - CACHE: cache_url_exists: "+str(cache_url_exists))
+            Logger.debug("Net Functions:  "+str(program_name)+" - CACHE: current_time_check: "+str(current_time_check))
+            Logger.debug("Net Functions:  "+str(program_name)+" - CACHE: cache_version_check: "+str(cache_version_check))
+            Logger.debug("Net Functions:  "+str(program_name)+" - CACHE: setting program_version to cache_data as fallback: "+str(cache_data))
             program_version = cache_data
 
     if lookup_method == "git-hub":
         headers = {}
 
         try:   
-            log.debug("get_program_version - "+str(program_name)+" - "+"Fetching new version from internet") 
+            Logger.debug("Net Functions:  "+str(program_name)+" - "+"Fetching new version from internet") 
             if github_token_exists:
                 headers = {
                     'Authorization': f'Bearer {github_token}',
@@ -144,13 +137,13 @@ def get_program_version(program_name, lookup_url, lookup_method):
                 response = requests.get(lookup_url)
             response.raise_for_status()
         except requests.exceptions.HTTPError as errh:
-            log.error("get_program_version - "+str(program_name)+" - "+f"HTTP Error: {errh}")
+            Logger.error("Net Functions:  "+str(program_name)+" - "+f"HTTP Error: {errh}")
         except requests.exceptions.ConnectionError as errc:
-            log.error("get_program_version - "+str(program_name)+" - "+f"Error Connecting: {errc}")
+            Logger.error("Net Functions:  "+str(program_name)+" - "+f"Error Connecting: {errc}")
         except requests.exceptions.Timeout as errt:
-            log.error("get_program_version - "+str(program_name)+" - "+f"Timeout Error: {errt}")
+            Logger.error("Net Functions:  "+str(program_name)+" - "+f"Timeout Error: {errt}")
         except requests.exceptions.RequestException as err:
-            log.error("get_program_version - "+str(program_name)+" - "+f"Something went wrong: {err}")
+            Logger.error("Net Functions:  "+str(program_name)+" - "+f"Something went wrong: {err}")
         else:
             if response.status_code == 200:
                 data = response.json()
@@ -167,37 +160,37 @@ def get_program_version(program_name, lookup_url, lookup_method):
                         with open(cache_file, 'wb') as f:
                             pickle.dump(cache, f)
 
-                        log.debug("get_program_version - "+str(program_name)+" - "+"New version fetched: "+str(program_version)) 
+                        Logger.debug("Net Functions:  "+str(program_name)+" - "+"New version fetched: "+str(program_version)) 
                         return program_version
                     else:
-                        log.error("get_program_version - "+str(program_name)+" - Invalid version: "+str(program_version))
+                        Logger.error("Net Functions:  "+str(program_name)+" - Invalid version: "+str(program_version))
                         return program_version
                 elif "API rate limit exceeded" in data:
-                    log.error("get_program_version - "+str(program_name)+" - "+"API rate limit exceeded.")
+                    Logger.error("Net Functions:  "+str(program_name)+" - "+"API rate limit exceeded.")
                     return program_version
                 else:
-                    log.error("get_program_version - "+str(program_name)+" - "+"'tag_name' not in response. Full response:")
-                    log.error("get_program_version - "+str(program_name)+" - "+str(data))
+                    Logger.error("Net Functions:  "+str(program_name)+" - "+"'tag_name' not in response. Full response:")
+                    Logger.error("Net Functions:  "+str(program_name)+" - "+str(data))
                     return program_version
             else:
-                log.error("get_program_version - "+str(program_name)+" - "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
+                Logger.error("Net Functions:  "+str(program_name)+" - "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
                 return program_version
         finally:
                 return program_version
     if lookup_method == "git-lab":
 
         try:   
-            log.debug("get_program_version - "+str(program_name)+" - "+"Fetching new version from internet") 
+            Logger.debug("Net Functions:  "+str(program_name)+" - "+"Fetching new version from internet") 
             response = requests.get(lookup_url)
             response.raise_for_status()
         except requests.exceptions.HTTPError as errh:
-            log.error("get_program_version - "+str(program_name)+" - "+f"HTTP Error: {errh}")
+            Logger.error("Net Functions:  "+str(program_name)+" - "+f"HTTP Error: {errh}")
         except requests.exceptions.ConnectionError as errc:
-            log.error("get_program_version - "+str(program_name)+" - "+f"Error Connecting: {errc}")
+            Logger.error("Net Functions:  "+str(program_name)+" - "+f"Error Connecting: {errc}")
         except requests.exceptions.Timeout as errt:
-            log.error("get_program_version - "+str(program_name)+" - "+f"Timeout Error: {errt}")
+            Logger.error("Net Functions:  "+str(program_name)+" - "+f"Timeout Error: {errt}")
         except requests.exceptions.RequestException as err:
-            log.error("get_program_version - "+str(program_name)+" - "+f"Something went wrong: {err}")
+            Logger.error("Net Functions:  "+str(program_name)+" - "+f"Something went wrong: {err}")
         else:
             if response.status_code == 200:
                 data = response.json()
@@ -217,14 +210,14 @@ def get_program_version(program_name, lookup_url, lookup_method):
 
                     return program_version
                 elif "API rate limit exceeded" in data:
-                    log.error("get_program_version - "+str(program_name)+" - "+"API rate limit exceeded.")
+                    Logger.error("Net Functions:  "+str(program_name)+" - "+"API rate limit exceeded.")
                     return program_version
                 else:
-                    log.error("get_program_version - "+str(program_name)+" - "+"'tag_name' not in response. Full response:")
-                    log.error("get_program_version - "+str(program_name)+" - "+str(data))
+                    Logger.error("Net Functions:  "+str(program_name)+" - "+"'tag_name' not in response. Full response:")
+                    Logger.error("Net Functions:  "+str(program_name)+" - "+str(data))
                     return program_version
             else:
-                log.error("get_program_version - "+str(program_name)+" - "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
+                Logger.error("Net Functions:  "+str(program_name)+" - "+"Error: response.status_code = "+str(response.status_code)+". It should be 200.")
                 return program_version
         finally:
                 return program_version
