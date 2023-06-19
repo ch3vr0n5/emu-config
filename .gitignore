@@ -237,4 +237,7 @@ $RECYCLE.BIN/
 # Test stuff
 emu-config/test.py
 
+# Build file
+build.ps1
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,visualstudiocode,python
